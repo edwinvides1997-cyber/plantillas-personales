@@ -76,7 +76,8 @@
       const error = document.getElementById("error");
 
       if (password === "1234") {
-        window.location.href = "privado.html";
+        localStorage.setItem("acceso", "ok");
+        window.location.href = "index.html";
       } else {
         error.textContent = "Clave incorrecta";
       }
