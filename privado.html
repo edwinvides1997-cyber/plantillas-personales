@@ -3,31 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Área privada</title>
+
+  <script>
+    if (localStorage.getItem("acceso") !== "ok") {
+      window.location.href = "login.html";
+    }
+  </script>
+
   <style>
     body {
       margin: 0;
       height: 100vh;
+      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #0f2027;
-      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
       color: white;
       font-family: Arial, sans-serif;
-      text-align: center;
     }
+
     .box {
       background: rgba(0,0,0,0.4);
       padding: 40px;
       border-radius: 12px;
+      text-align: center;
     }
   </style>
 </head>
+
 <body>
 
   <div class="box">
-    <h1>✨ Bienvenido ✨</h1>
-    <p>Este es el contenido privado.</p>
+    <h2>Área privada</h2>
+    <p>Contenido adicional.</p>
   </div>
 
 </body>
