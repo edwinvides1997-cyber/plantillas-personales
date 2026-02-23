@@ -1,68 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Inicio</title>
+<meta charset="UTF-8">
+<title>Plantillas</title>
 
-  <!-- PROTECCIÓN -->
-  <script>
-    if (localStorage.getItem("acceso") !== "ok") {
-      window.location.href = "login.html";
-    }
-  </script>
+<script>
+if(!localStorage.getItem("rol")){
+  window.location.href="login.html";
+}
+if(localStorage.getItem("rol") === "admin"){
+  window.location.href="privado.html";
+}
+</script>
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: url("assets/fondo.jpg") center/cover no-repeat;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-
-    .container {
-      background: rgba(0,0,0,0.5);
-      padding: 40px;
-      border-radius: 15px;
-      text-align: center;
-      max-width: 500px;
-    }
-
-    h1 {
-      margin-bottom: 15px;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #ffffff;
-      color: #2c3e50;
-      font-size: 15px;
-      cursor: pointer;
-    }
-  </style>
+<style>
+body{
+  font-family:Arial;
+  padding:40px;
+}
+button{
+  margin-top:20px;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>✨ Bienvenido ✨</h1>
-    <p>Desde aquí accederás a las plantillas organizadas.</p>
+<h1>Plantillas</h1>
+<p>Aquí están todas las plantillas disponibles.</p>
 
-    <button onclick="logout()">Cerrar sesión</button>
-  </div>
+<button onclick="logout()">Cerrar sesión</button>
 
-  <script>
-    function logout() {
-      localStorage.removeItem("acceso");
-      window.location.href = "login.html";
-    }
-  </script>
+<script>
+function logout(){
+  localStorage.removeItem("rol");
+  window.location.href="login.html";
+}
+</script>
 
 </body>
 </html>
