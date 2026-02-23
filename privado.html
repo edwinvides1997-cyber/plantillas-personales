@@ -1,42 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Área privada</title>
+<meta charset="UTF-8">
+<title>Panel Privado</title>
 
-  <script>
-    if (localStorage.getItem("acceso") !== "ok") {
-      window.location.href = "login.html";
-    }
-  </script>
+<script>
+if(localStorage.getItem("rol") !== "admin"){
+  window.location.href="login.html";
+}
+</script>
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-
-    .box {
-      background: rgba(0,0,0,0.4);
-      padding: 40px;
-      border-radius: 12px;
-      text-align: center;
-    }
-  </style>
+<style>
+body{
+  font-family:Arial;
+  padding:40px;
+  background:#f4f4f4;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="box">
-    <h2>Área privada</h2>
-    <p>Contenido adicional.</p>
-  </div>
+<h1>Panel de Administración</h1>
+<p>Aquí puedes editar y gestionar las plantillas.</p>
+
+<button onclick="logout()">Cerrar sesión</button>
+
+<script>
+function logout(){
+  localStorage.removeItem("rol");
+  window.location.href="login.html";
+}
+</script>
 
 </body>
 </html>
