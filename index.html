@@ -184,10 +184,15 @@ let currentSection="";
 
 function openSection(section){
   currentSection=section;
+
   document.getElementById("mainMenu").style.display="none";
   document.getElementById("sectionContainer").style.display="block";
   document.getElementById("sectionTitle").innerText = event.target.innerText;
+
   loadTemplates(section);
+
+  // 🔥 Limpiar buscador al entrar
+  setTimeout(()=>resetSearch(),50);
 }
 
 function loadTemplates(section){
@@ -234,10 +239,23 @@ function filterTemplates(input){
     }
   });
 }
+  
+function resetSearch(){
+  const searchInput = document.querySelector(".search-box");
+  searchInput.value = "";
 
+  const items = document.querySelectorAll(".template-item");
+  items.forEach(item=>{
+    item.style.display="block";
+  });
+}
+  
 function goBack(){
   document.getElementById("sectionContainer").style.display="none";
   document.getElementById("mainMenu").style.display="block";
+
+  // 🔥 Limpiar buscador al salir
+  resetSearch();
 }
 
 function logout(){
