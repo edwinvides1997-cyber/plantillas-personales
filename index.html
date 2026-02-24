@@ -16,8 +16,8 @@ if(localStorage.getItem("rol") === "admin"){
 <style>
 body{
   margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  font-family:'Segoe UI', sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   color:white;
   text-align:center;
 }
@@ -33,14 +33,14 @@ h1{
 
 .grid{
   display:grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
   gap:25px;
   max-width:900px;
   margin:auto;
 }
 
 .card{
-  background:#ffffff;
+  background:white;
   color:#333;
   padding:25px;
   border-radius:14px;
@@ -53,53 +53,188 @@ h1{
 
 .card:hover{
   transform:translateY(-5px);
-  box-shadow:0 12px 25px rgba(0,0,0,0.3);
+}
+
+.section-view{
+  display:none;
+  max-width:800px;
+  margin:40px auto;
+  background:white;
+  color:#333;
+  padding:30px;
+  border-radius:15px;
+  animation:fadeIn 0.3s ease;
+}
+
+.template-item{
+  background:#f4f6f9;
+  padding:15px;
+  border-radius:8px;
+  margin-bottom:15px;
+  text-align:left;
+}
+
+.copy-btn{
+  margin-top:8px;
+  padding:5px 10px;
+  border:none;
+  background:#2c5364;
+  color:white;
+  border-radius:5px;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.search-box{
+  width:100%;
+  padding:10px;
+  margin-bottom:20px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+
+.back-btn{
+  margin-top:20px;
+  padding:8px 15px;
+  border:none;
+  background:#2c5364;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
 }
 
 .logout{
-  margin-top:60px;
+  margin-top:40px;
   padding:10px 20px;
   border:none;
   background:white;
   color:#2c5364;
   border-radius:8px;
   cursor:pointer;
-  font-weight:bold;
 }
 
-.logout:hover{
-  background:#e0e0e0;
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="container" id="mainMenu">
   <h1>Panel de Plantillas</h1>
 
   <div class="grid">
-
-    <div class="card">Crédito Directo</div>
-
-    <div class="card">ICETEX</div>
-
-    <div class="card">Convenios</div>
-
-    <div class="card">Beca Académica de Honor</div>
-
-    <div class="card">Generales</div>
-
+    <div class="card" onclick="openSection('credito')">Crédito Directo</div>
+    <div class="card" onclick="openSection('icetex')">ICETEX</div>
+    <div class="card" onclick="openSection('convenios')">Convenios</div>
+    <div class="card" onclick="openSection('beca')">Beca Académica de Honor</div>
+    <div class="card" onclick="openSection('generales')">Generales</div>
   </div>
 
   <button class="logout" onclick="logout()">Cerrar sesión</button>
 </div>
 
+
+<!-- SECCIÓN DINÁMICA -->
+<div id="sectionContainer" class="section-view">
+  <h2 id="sectionTitle"></h2>
+
+  <input type="text" class="search-box" placeholder="Buscar dentro de la plantilla..." onkeyup="filterTemplates(this)">
+
+  <div id="templatesArea"></div>
+
+  <button class="back-btn" onclick="goBack()">Volver</button>
+</div>
+
+
 <script>
+
+const templates = {
+  credito: [
+    "Puedes acceder a la modalidad de Crédito Directo bajo las condiciones establecidas.",
+    "Adjunta los documentos solicitados para continuar con el proceso."
+  ],
+  icetex: [
+    "Verifica el estado de tu proceso con ICETEX.",
+    "Cumple con los requisitos para la legalización del crédito."
+  ],
+  convenios: [
+    "Consulta los convenios vigentes disponibles.",
+    "Valida si aplicas a beneficios especiales."
+  ],
+  beca: [
+    "Felicitaciones por tu excelente desempeño académico.",
+    "Has sido preseleccionado para la Beca Académica de Honor."
+  ],
+  generales: [
+    "Tu solicitud ha sido recibida y está en proceso de validación.",
+    "Recuerda adjuntar los documentos faltantes."
+  ]
+};
+
+function openSection(section){
+  document.getElementById("mainMenu").style.display="none";
+  document.getElementById("sectionContainer").style.display="block";
+  document.getElementById("sectionTitle").innerText = event.target.innerText;
+
+  loadTemplates(section);
+}
+
+function loadTemplates(section){
+  const area = document.getElementById("templatesArea");
+  area.innerHTML = "";
+
+  // Cargar plantillas base
+  templates[section].forEach(text => {
+    createTemplateItem(text, area);
+  });
+
+  // Cargar plantillas creadas por admin
+  const custom = JSON.parse(localStorage.getItem("custom_"+section)) || [];
+  custom.forEach(text=>{
+    createTemplateItem(text, area);
+  });
+}
+
+function createTemplateItem(text, area){
+  const div = document.createElement("div");
+  div.className="template-item";
+  div.innerHTML = `
+    <div class="template-text">${text}</div>
+    <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+  `;
+  area.appendChild(div);
+}
+
+function copyText(button){
+  const text = button.parentElement.querySelector(".template-text").innerText;
+  navigator.clipboard.writeText(text);
+  button.innerText="Copiado ✓";
+  setTimeout(()=>button.innerText="Copiar",1500);
+}
+
+function filterTemplates(input){
+  const value = input.value.toLowerCase();
+  const items = document.querySelectorAll(".template-item");
+
+  items.forEach(item=>{
+    const text = item.innerText.toLowerCase();
+    item.style.display = text.includes(value) ? "block" : "none";
+  });
+}
+
+function goBack(){
+  document.getElementById("sectionContainer").style.display="none";
+  document.getElementById("mainMenu").style.display="block";
+}
+
 function logout(){
   localStorage.removeItem("rol");
   window.location.href="login.html";
 }
+
 </script>
 
 </body>
