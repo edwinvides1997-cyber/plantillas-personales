@@ -62,6 +62,7 @@ button{
 
 <div class="section">
   <h3>Crear Nueva Categoría</h3>
+  <div id="categoriesList" style="margin-top:15px;"></div>
   <input type="text" id="newCategory" placeholder="Nombre de la categoría">
   <button class="add-btn" onclick="addCategory()">Agregar Categoría</button>
 </div>
@@ -95,7 +96,25 @@ function getCategorias(){
   }
   return categorias;
 }
+function loadCategoriesList(){
+  const list=document.getElementById("categoriesList");
+  list.innerHTML="";
 
+  const categorias=getCategorias();
+
+  categorias.forEach(cat=>{
+    const div=document.createElement("div");
+    div.style.marginBottom="8px";
+
+    div.innerHTML=`
+      <strong>${cat}</strong>
+      <button class="delete-btn" onclick="deleteCategory('${cat}')">🗑</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+  
 function loadCategorias(){
   const select=document.getElementById("sectionSelect");
   select.innerHTML="";
@@ -119,8 +138,24 @@ function addCategory(){
   document.getElementById("newCategory").value="";
   loadCategorias();
   alert("Categoría creada");
+  loadCategoriesList();
 }
+function deleteCategory(cat){
 
+  if(!confirm("¿Eliminar categoría y todas sus plantillas?")) return;
+
+  let categorias=getCategorias();
+  categorias=categorias.filter(c=>c!==cat);
+
+  localStorage.setItem("categorias",JSON.stringify(categorias));
+
+  // Eliminar plantillas asociadas
+  localStorage.removeItem("custom_"+cat);
+
+  loadCategorias();
+  loadCategoriesList();
+  loadTemplates();
+}
 function addTemplate(){
   const section=document.getElementById("sectionSelect").value;
   const titulo=document.getElementById("titulo").value;
@@ -191,7 +226,7 @@ function deleteTemplate(section,index){
 
 loadCategorias();
 loadTemplates();
-
+loadCategoriesList();
 </script>
 
 </body>
