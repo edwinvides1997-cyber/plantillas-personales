@@ -68,21 +68,32 @@ h1{
 
 .template-item{
   background:#f4f6f9;
-  padding:15px;
-  border-radius:8px;
+  padding:18px;
+  border-radius:10px;
   margin-bottom:15px;
   text-align:left;
+  position:relative;
+}
+
+.template-title{
+  font-weight:bold;
+  font-size:16px;
+  margin-bottom:8px;
+}
+
+.template-content{
+  font-size:14px;
+  color:#444;
 }
 
 .copy-btn{
-  margin-top:8px;
-  padding:5px 10px;
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:none;
   border:none;
-  background:#2c5364;
-  color:white;
-  border-radius:5px;
+  font-size:18px;
   cursor:pointer;
-  font-size:12px;
 }
 
 .search-box{
@@ -137,11 +148,10 @@ h1{
 </div>
 
 
-<!-- SECCIÓN DINÁMICA -->
 <div id="sectionContainer" class="section-view">
   <h2 id="sectionTitle"></h2>
 
-  <input type="text" class="search-box" placeholder="Buscar dentro de la plantilla..." onkeyup="filterTemplates(this)">
+  <input type="text" class="search-box" placeholder="Buscar por título..." onkeyup="filterTemplates(this)">
 
   <div id="templatesArea"></div>
 
@@ -153,32 +163,30 @@ h1{
 
 const templates = {
   credito: [
-    "Puedes acceder a la modalidad de Crédito Directo bajo las condiciones establecidas.",
-    "Adjunta los documentos solicitados para continuar con el proceso."
+    {titulo:"Información Crédito Directo", contenido:"Puedes acceder a la modalidad de Crédito Directo bajo las condiciones establecidas."},
+    {titulo:"Documentos Crédito Directo", contenido:"Adjunta los documentos solicitados para continuar con el proceso."}
   ],
   icetex: [
-    "Verifica el estado de tu proceso con ICETEX.",
-    "Cumple con los requisitos para la legalización del crédito."
+    {titulo:"Estado ICETEX", contenido:"Verifica el estado de tu proceso con ICETEX."}
   ],
   convenios: [
-    "Consulta los convenios vigentes disponibles.",
-    "Valida si aplicas a beneficios especiales."
+    {titulo:"Consulta Convenios", contenido:"Consulta los convenios vigentes disponibles."}
   ],
   beca: [
-    "Felicitaciones por tu excelente desempeño académico.",
-    "Has sido preseleccionado para la Beca Académica de Honor."
+    {titulo:"Felicitación Beca", contenido:"Felicitaciones por tu excelente desempeño académico."}
   ],
   generales: [
-    "Tu solicitud ha sido recibida y está en proceso de validación.",
-    "Recuerda adjuntar los documentos faltantes."
+    {titulo:"Solicitud Recibida", contenido:"Tu solicitud ha sido recibida y está en proceso de validación."}
   ]
 };
 
+let currentSection="";
+
 function openSection(section){
+  currentSection=section;
   document.getElementById("mainMenu").style.display="none";
   document.getElementById("sectionContainer").style.display="block";
   document.getElementById("sectionTitle").innerText = event.target.innerText;
-
   loadTemplates(section);
 }
 
@@ -186,33 +194,29 @@ function loadTemplates(section){
   const area = document.getElementById("templatesArea");
   area.innerHTML = "";
 
-  // Cargar plantillas base
-  templates[section].forEach(text => {
-    createTemplateItem(text, area);
+  templates[section].forEach(obj=>{
+    createTemplateItem(obj.titulo,obj.contenido,area);
   });
 
-  // Cargar plantillas creadas por admin
   const custom = JSON.parse(localStorage.getItem("custom_"+section)) || [];
-  custom.forEach(text=>{
-    createTemplateItem(text, area);
+  custom.forEach(obj=>{
+    createTemplateItem(obj.titulo,obj.contenido,area);
   });
 }
 
-function createTemplateItem(text, area){
-  const div = document.createElement("div");
+function createTemplateItem(titulo,contenido,area){
+  const div=document.createElement("div");
   div.className="template-item";
-  div.innerHTML = `
-    <div class="template-text">${text}</div>
-    <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+  div.innerHTML=`
+    <div class="template-title">${titulo}</div>
+    <div class="template-content">${contenido}</div>
+    <button class="copy-btn" onclick="copyText('${contenido.replace(/'/g,"\\'")}')">📋</button>
   `;
   area.appendChild(div);
 }
 
-function copyText(button){
-  const text = button.parentElement.querySelector(".template-text").innerText;
+function copyText(text){
   navigator.clipboard.writeText(text);
-  button.innerText="Copiado ✓";
-  setTimeout(()=>button.innerText="Copiar",1500);
 }
 
 function filterTemplates(input){
@@ -220,8 +224,14 @@ function filterTemplates(input){
   const items = document.querySelectorAll(".template-item");
 
   items.forEach(item=>{
-    const text = item.innerText.toLowerCase();
-    item.style.display = text.includes(value) ? "block" : "none";
+    const title = item.querySelector(".template-title").innerText.toLowerCase();
+    const content = item.querySelector(".template-content").innerText.toLowerCase();
+
+    if(title.includes(value) || content.includes(value)){
+      item.style.display="block";
+    } else {
+      item.style.display="none";
+    }
   });
 }
 
